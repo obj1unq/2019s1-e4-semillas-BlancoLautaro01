@@ -1,0 +1,74 @@
+import semillas.*
+import parcelas.*
+import inta.*
+
+describe "Semillas" {
+	
+	const menta1 = new Menta(2005, 1)
+	const menta2 = new Menta(2005, 0.3)
+	const soja1 = new Soja(2009, 0.6)
+	const soja2 = new Soja(2009, 3)
+	const soja3 = new Soja(2009, 2)
+	const soja4 = new Soja(2009, 15)
+	const soja5 = new Soja(2009, 4)
+	const quinoa1 = new Quinoa(2010,1)
+	const quinoa2 = new Quinoa(2001,1)
+	const parcela1 = new Parcela(20, 1, 8, ecologica)
+	
+	fixture {
+		quinoa1.horasDeSolToleradas(12)
+		quinoa2.horasDeSolToleradas(9)
+		
+		parcela1.plantar(soja2)
+		parcela1.plantar(soja3)
+		parcela1.plantar(soja4)
+		parcela1.plantar(soja5)
+	}
+	
+	//TESTS MENTA
+	test "Una menta de 1 metro, debería dar semillas y ocupar un espacio de 3 metros cuadrados." {
+		assert.that(menta1.daSemillas() and menta1.espacioOcupado() == 3)
+	}
+	
+	test "Una menta de solo 0.3 metros, no debería dar semillas y ocuparía 0.9 m2 de espacio." {
+		assert.notThat(menta2.daSemillas())
+		assert.that(menta2.espacioOcupado() == 0.9)
+	}
+	
+	//TESTS SOJA
+	test "Una soja de 0.6 metros y de semilla de 2009, la planta tendría una tolerancia al sol de 7 horas,
+		 no daría semillas y ocuparía 0.3 m2." {
+		 	
+		assert.notThat(soja1.daSemillas())
+		assert.that(soja1.horasDeSolToleradas() == 7 and soja1.espacioOcupado() == 0.3)
+	}
+	
+	//TESTS QUINOA
+	test "una quinoa que tolera 12 horas de sol y su semilla de origen es de 2010, da semillas." {
+		assert.that(quinoa1.daSemillas())
+	}
+	
+	test "Una planta que tolere 9 horas de sol pero cuya semilla de origen es de 2001, también da semillas." {
+		assert.that(quinoa2.daSemillas())
+	}
+	
+	//TESTS PLANTAR
+	test "Una parcela de 20 mts. de ancho por 1 mt. de largo que recibe 8 horas de sol por día, tiene una superficie de 20 m2 y
+		la cantidad máxima de plantas que tolera es de 4.." {
+		assert.that(parcela1.superficie() == 20 and parcela1.maximoPlantas() == 4)
+	}
+	
+	test "Si a esa parcela le plantamos 4 plantas de soja de más de 1 metro (que toleran 9 horas de sol), no tendría complicaciones." {
+		assert.notThat(parcela1.tieneComplicaciones())
+	}
+	
+	test "Si intentaramos agregar una quinta planta, se superaría la cantidad máxima y nos arrojaría un error." {
+		assert.throwsExceptionWithMessage("Se ha alcanzado el maximo de plantas para esta Parcela.", { parcela1.plantar(soja1) } )
+	}
+	
+	//TESTS esIdeal
+	test "parcela1 esIdeal para cualquier menta y no esIdeal para ninguna soja" {
+		assert.that(menta1.esIdeal(parcela1))
+		assert.notThat(soja1.esIdeal(parcela1))
+	}
+}
